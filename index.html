@@ -62,17 +62,13 @@
       display: block;
       margin-bottom: 5px;
     }
-    .status {
-      font-weight: bold;
-      color: #007BFF;
-    }
   </style>
 </head>
 <body>
   <h1 style="text-align:center;">订单提交</h1>
   <form id="orderForm">
-    <label for="item">物品名称</label>
-    <input type="text" id="item" name="item" placeholder="输入物品名称" required>
+    <label for="item">水果名称或其他物品</label>
+    <input type="text" id="item" name="item" placeholder="输入水果名称" required>
     
     <label for="username">你的名字（英文全名）</label>
     <input type="text" id="username" name="username" placeholder="输入你的名字" required>
@@ -81,86 +77,70 @@
   </form>
 
   <div class="order-list" id="orderList">
-    <h2>已提交的订单</h2>
+    <h2>已提交订单</h2>
     <div id="orders"></div>
   </div>
 
   <script>
     const orderForm = document.getElementById('orderForm');
     const orderList = document.getElementById('orders');
-    const PASSWORD = 'Jiu142857kuang';
 
-    // Load orders from localStorage
-    const orders = JSON.parse(localStorage.getItem('orders')) || [];
+    // Retrieve orders from localStorage or initialize an empty array
+    let orders = JSON.parse(localStorage.getItem('orders')) || [];
 
-    // Function to render orders
+    // Render orders on page load
+    renderOrders();
+
+    orderForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const item = document.getElementById('item').value;
+      const username = document.getElementById('username').value;
+
+      // New order with default status as "已提交"
+      const order = { item, username, status: '已提交' };
+      orders.push(order);
+
+      // Save orders to localStorage
+      localStorage.setItem('orders', JSON.stringify(orders));
+
+      // Re-render orders and reset the form
+      renderOrders();
+      orderForm.reset();
+    });
+
     function renderOrders() {
-      orderList.innerHTML = '';
+      orderList.innerHTML = ''; // Clear current list
       orders.forEach((order, index) => {
         const orderDiv = document.createElement('div');
         orderDiv.className = 'order-item';
         orderDiv.innerHTML = `
-          <span><strong>物品名称：</strong> ${order.item}</span>
-          <span><strong>提交人：</strong> ${order.username}</span>
-          <span><strong>价格：</strong> ${order.price || '未设置'}</span>
-          <span><strong>送达日期：</strong> ${order.deliveryDate || '未设置'}</span>
-          <span><strong>订单状态：</strong> <span class="status">${order.status}</span></span>
-          <button onclick="updateOrder(${index})">仅限作者：修改订单</button>
+          <span><strong>物品:</strong> ${order.item}</span>
+          <span><strong>名字:</strong> ${order.username}</span>
+          <span><strong>状态:</strong> ${order.status}</span>
+          <button onclick="changeStatus(${index})">修改状态</button>
+          <button onclick="deleteOrder(${index})" style="background-color: red; margin-left: 10px;">删除订单</button>
         `;
         orderList.appendChild(orderDiv);
       });
     }
 
-    // Save orders to localStorage
-    function saveOrders() {
-      localStorage.setItem('orders', JSON.stringify(orders));
-    }
-
-    // Add new order
-    orderForm.addEventListener('submit', function (e) {
-      e.preventDefault();
-      const item = document.getElementById('item').value;
-      const username = document.getElementById('username').value;
-
-      const order = { 
-        item, 
-        username, 
-        price: '', 
-        deliveryDate: '', 
-        status: '已提交' // Default status
-      };
-      orders.push(order);
-      saveOrders();
-      renderOrders();
-      orderForm.reset();
-    });
-
-    // Update order (only for author)
-    function updateOrder(index) {
-      const password = prompt('请输入密码以修改订单：');
-      if (password === PASSWORD) {
-        const status = prompt('请输入新的订单状态 (已查看 或 已送达)：');
-        const price = prompt('请输入价格 (可选，按 Enter 跳过)：');
-        const deliveryDate = prompt('请输入送达日期 (可选，按 Enter 跳过)：');
-
-        if (status && (status === '已查看' || status === '已送达')) {
-          orders[index].status = status;
-        } else {
-          alert('状态无效！请输入 "已查看" 或 "已送达"');
-        }
-
-        if (price) orders[index].price = price;
-        if (deliveryDate) orders[index].deliveryDate = deliveryDate;
-
-        saveOrders();
+    function changeStatus(index) {
+      const newStatus = prompt('请输入新的状态 (已查看 / 已送达):', orders[index].status);
+      if (newStatus) {
+        orders[index].status = newStatus;
+        localStorage.setItem('orders', JSON.stringify(orders));
         renderOrders();
-      } else {
-        alert('密码错误！无法修改订单。');
       }
     }
 
-    // Initial render
-    renderOrders();
+    function deleteOrder(index) {
+      if (confirm('确定要删除这个订单吗？')) {
+        orders.splice(index, 1); // Remove order from the array
+        localStorage.setItem('orders', JSON.stringify(orders)); // Update localStorage
+        renderOrders(); // Re-render orders
+      }
+    }
   </script>
 </body>
 </html>
