@@ -4,75 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>订单提交</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      background-color: #f9f9f9;
-    }
-    form {
-      max-width: 500px;
-      margin: 20px auto;
-      padding: 20px;
-      background: white;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: bold;
-    }
-    input {
-      width: 100%;
-      margin-bottom: 15px;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-    }
-    button {
-      background-color: #007BFF;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-    .order-list {
-      max-width: 700px;
-      margin: 20px auto;
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      border: 1px solid #ddd;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    .order-item {
-      border-bottom: 1px solid #ddd;
-      padding: 10px 0;
-    }
-    .order-item:last-child {
-      border-bottom: none;
-    }
-    .order-item span {
-      display: block;
-      margin-bottom: 5px;
-    }
-  </style>
 </head>
 <body>
   <h1 style="text-align:center;">订单提交</h1>
   <form id="orderForm">
     <label for="item">水果名称或其他物品</label>
     <input type="text" id="item" name="item" placeholder="输入水果名称" required>
-    
+
     <label for="username">你的名字（英文全名）</label>
     <input type="text" id="username" name="username" placeholder="输入你的名字" required>
-    
+
     <button type="submit">提交订单</button>
   </form>
 
@@ -85,62 +26,67 @@
     const orderForm = document.getElementById('orderForm');
     const orderList = document.getElementById('orders');
 
-    // Retrieve orders from localStorage or initialize an empty array
-    let orders = JSON.parse(localStorage.getItem('orders')) || [];
+    // Fetch orders from the API
+    function getOrders() {
+      fetch('/api/order')
+        .then(response => response.json())
+        .then(orders => renderOrders(orders));
+    }
 
-    // Render orders on page load
-    renderOrders();
-
-    orderForm.addEventListener('submit', function (e) {
-      e.preventDefault();
-
-      const item = document.getElementById('item').value;
-      const username = document.getElementById('username').value;
-
-      // New order with default status as "已提交"
-      const order = { item, username, status: '已提交' };
-      orders.push(order);
-
-      // Save orders to localStorage
-      localStorage.setItem('orders', JSON.stringify(orders));
-
-      // Re-render orders and reset the form
-      renderOrders();
-      orderForm.reset();
-    });
-
-    function renderOrders() {
-      orderList.innerHTML = ''; // Clear current list
-      orders.forEach((order, index) => {
+    // Render orders
+    function renderOrders(orders) {
+      orderList.innerHTML = '';
+      orders.forEach(order => {
         const orderDiv = document.createElement('div');
         orderDiv.className = 'order-item';
         orderDiv.innerHTML = `
           <span><strong>物品:</strong> ${order.item}</span>
           <span><strong>名字:</strong> ${order.username}</span>
           <span><strong>状态:</strong> ${order.status}</span>
-          <button onclick="changeStatus(${index})">修改状态</button>
-          <button onclick="deleteOrder(${index})" style="background-color: red; margin-left: 10px;">删除订单</button>
+          <button onclick="changeStatus('${order._id}')">修改状态</button>
+          <button onclick="deleteOrder('${order._id}')">删除订单</button>
         `;
         orderList.appendChild(orderDiv);
       });
     }
 
-    function changeStatus(index) {
-      const newStatus = prompt('请输入新的状态 (已查看 / 已送达):', orders[index].status);
+    // Change order status
+    function changeStatus(id) {
+      const newStatus = prompt('请输入新的状态 (已查看 / 已送达):');
       if (newStatus) {
-        orders[index].status = newStatus;
-        localStorage.setItem('orders', JSON.stringify(orders));
-        renderOrders();
+        fetch(`/api/order?id=${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus })
+        }).then(() => getOrders());
       }
     }
 
-    function deleteOrder(index) {
+    // Delete order
+    function deleteOrder(id) {
       if (confirm('确定要删除这个订单吗？')) {
-        orders.splice(index, 1); // Remove order from the array
-        localStorage.setItem('orders', JSON.stringify(orders)); // Update localStorage
-        renderOrders(); // Re-render orders
+        fetch(`/api/order?deleteId=${id}`, { method: 'DELETE' })
+          .then(() => getOrders());
       }
     }
+
+    // Handle form submission
+    orderForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const item = document.getElementById('item').value;
+      const username = document.getElementById('username').value;
+
+      fetch('/api/order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ item, username })
+      }).then(() => {
+        getOrders();
+        orderForm.reset();
+      });
+    });
+
+    document.addEventListener('DOMContentLoaded', getOrders);
   </script>
 </body>
 </html>
