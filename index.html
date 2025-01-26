@@ -67,14 +67,11 @@
 <body>
   <h1 style="text-align:center;">Order Submission</h1>
   <form id="orderForm">
-    <label for="item">Item Name</label>
-    <input type="text" id="item" name="item" placeholder="Enter item name" required>
+    <label for="item">水果名称或其他item</label>
+    <input type="text" id="item" name="item" placeholder="输入水果名称" required>
     
-    <label for="username">Your Name</label>
-    <input type="text" id="username" name="username" placeholder="Enter your name" required>
-    
-    <label for="waterName">Water Name (in Chinese)</label>
-    <input type="text" id="waterName" name="waterName" placeholder="Enter water name in Chinese" required>
+    <label for="username">你的名字（英文full name）</label>
+    <input type="text" id="username" name="username" placeholder="输入你的名字" required>
     
     <button type="submit">Submit Order</button>
   </form>
@@ -114,7 +111,7 @@
           <span><strong>Water Name:</strong> ${order.waterName}</span>
           <span><strong>Price:</strong> ${order.price || 'Not Set'}</span>
           <span><strong>Delivery Date:</strong> ${order.deliveryDate || 'Not Set'}</span>
-          <button onclick="updateOrder(${index})">Set Price & Delivery Date</button>
+          <button onclick="updateOrder(${index})">作者only， 设置价格和送达日期</button>
         `;
         orderList.appendChild(orderDiv);
       });
