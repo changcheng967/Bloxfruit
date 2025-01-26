@@ -33,7 +33,7 @@
         .then(orders => renderOrders(orders));
     }
 
-    // Render orders
+    // Render orders on the page
     function renderOrders(orders) {
       orderList.innerHTML = '';
       orders.forEach(order => {
@@ -54,18 +54,21 @@
     function changeStatus(id) {
       const newStatus = prompt('请输入新的状态 (已查看 / 已送达):');
       if (newStatus) {
-        fetch(`/api/order?id=${id}`, {
+        fetch(`/api/order`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ status: newStatus })
-        }).then(() => getOrders());
+          body: JSON.stringify({ id, status: newStatus })
+        })
+          .then(response => response.json())
+          .then(() => getOrders());
       }
     }
 
-    // Delete order
+    // Delete an order
     function deleteOrder(id) {
       if (confirm('确定要删除这个订单吗？')) {
         fetch(`/api/order?deleteId=${id}`, { method: 'DELETE' })
+          .then(response => response.json())
           .then(() => getOrders());
       }
     }
@@ -80,13 +83,16 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ item, username })
-      }).then(() => {
-        getOrders();
-        orderForm.reset();
-      });
+      })
+        .then(response => response.json())
+        .then(() => {
+          getOrders(); // Refresh the order list
+          orderForm.reset(); // Reset the form
+        });
     });
 
-    document.addEventListener('DOMContentLoaded', getOrders);
+    // Load orders on page load
+    window.onload = getOrders;
   </script>
 </body>
 </html>
