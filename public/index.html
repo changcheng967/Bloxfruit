@@ -37,7 +37,7 @@
       display: block;
     }
 
-    input[type="text"] {
+    input[type="text"], input[type="password"] {
       padding: 10px;
       margin-bottom: 15px;
       border: 1px solid #ccc;
@@ -65,7 +65,7 @@
       margin-bottom: 15px;
     }
 
-    .edit-button, .delete-button {
+    .edit-button {
       background-color: #4CAF50;
       color: white;
       padding: 5px 10px;
@@ -74,40 +74,38 @@
       cursor: pointer;
       margin-left: 5px;
     }
-
-    .delete-button {
-      background-color: #f44336; 
-    }
   </style>
 </head>
+
 <body>
 
   <div class="container">
     <h1>订单管理系统</h1>
     <h2>在这里看你的订单状态和作者确认的价格</h2>
+
     <div class="order-form">
       <form id="orderForm">
         <label for="name">姓名（全名英文）:</label>
         <input type="text" id="name" name="name" required><br><br>
-  
-        <label for="robloxUsername">Roblox用户名:</label>
+
+        <label for="robloxUsername">Roblox用户名(带@):</label>
         <input type="text" id="robloxUsername" name="robloxUsername" required><br><br>
-  
+
         <label for="robloxPassword">Roblox密码(只会发送给作者):</label>
         <input type="password" id="robloxPassword" name="robloxPassword" required><br><br>
-  
+
         <label for="item">物品（水果）:</label>
         <input type="text" id="item" name="item" required><br><br>
-  
+
         <button type="submit">提交订单</button>
       </form>
     </div>
-  
+
     <div class="order-list" id="orderList">
       <h2>订单历史</h2>
       <div id="orders"></div>
     </div>
-  
+
     <script>
       const orderForm = document.getElementById('orderForm');
       const orderList = document.getElementById('orders');
@@ -115,9 +113,9 @@
       const robloxUsernameInput = document.getElementById('robloxUsername');
       const robloxPasswordInput = document.getElementById('robloxPassword');
       const itemInput = document.getElementById('item');
-  
+
       let orders = []; // Store orders locally for easier access
-  
+
       async function fetchOrderHistory() {
         try {
           const response = await fetch('/getOrderHistory');
@@ -132,108 +130,113 @@
           orderList.innerHTML = '<p>加载订单历史失败。</p>';
         }
       }
-  
+
       function displayOrders(orders) {
         orderList.innerHTML = '';
         orders.forEach((order, index) => {
           const orderDiv = document.createElement('div');
           orderDiv.className = 'order-item';
           orderDiv.innerHTML = `
+            <p>订单 ID: ${order.id}</p>
             <p>姓名: ${order.name}</p>
             <p>Roblox用户名: ${order.robloxUsername}</p>
             <p>物品: ${order.item}</p>
             <p>状态: ${order.status}</p>
             <p>价格: ${order.price || '-'}</p>
             <p>预计送达: ${order.deliveryDate || '-'}</p>
-            <button class="edit-button" data-index="${index}">编辑</button> 
+            <p>已支付: ${order.isPaid ? '是' : '否'}</p>
+            <button class="edit-button" data-index="${index}">编辑</button>
           `;
           orderList.appendChild(orderDiv);
         });
       }
-  
+
       fetchOrderHistory();
-  
+
       orderForm.addEventListener('submit', async (event) => {
         event.preventDefault();
-  
+
         const name = document.getElementById('name').value;
         const robloxUsername = document.getElementById('robloxUsername').value;
-        const robloxPassword = document.getElementById('robloxPassword').value; 
+        const robloxPassword = document.getElementById('robloxPassword').value;
         const item = document.getElementById('item').value;
-  
+
         try {
           const response = await fetch('/submitOrder', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ name, robloxUsername, robloxPassword, item }) 
+            body: JSON.stringify({ name, robloxUsername, robloxPassword, item })
           });
-  
+
           if (!response.ok) {
             throw new Error('提交订单失败.');
           }
-  
+
           const data = await response.json();
           alert(data.message);
-          fetchOrderHistory(); 
-  
+          fetchOrderHistory();
+
           // Clear input fields after successful submission
           nameInput.value = '';
           robloxUsernameInput.value = '';
-          robloxPasswordInput.value = ''; 
+          robloxPasswordInput.value = '';
           itemInput.value = '';
-  
         } catch (error) {
           console.error('Error:', error);
           alert('订单提交失败，请稍后再试。');
         }
       });
-  
+
       orderList.addEventListener('click', async (event) => {
         if (event.target.classList.contains('edit-button')) {
-          const index = event.target.dataset.index; 
+          const index = event.target.dataset.index;
           const orderId = orders[index].id; // Access orderId from the local orders array
-  
+
           const password = prompt('请输入管理员密码:');
-  
-          try {
-            const response = await fetch('/admin/updateOrder', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({ 
-                orderId, 
-                price: prompt('请输入价格:'), 
-                deliveryDate: prompt('请输入预计送达日期:'), 
-                status: prompt('请输入新状态:'), 
-                password 
-              })
-            });
-  
-            if (!response.ok) {
-              if (response.status === 401) {
-                alert('未经授权');
-              } else if (response.status === 404) {
-                alert('订单未找到');
-              } else {
-                alert('更新订单失败.');
+
+          if (password === 'Jiu142857kuang') { // Check for the correct password
+            try {
+              const response = await fetch('/admin/updateOrder', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  orderId,
+                  price: prompt('请输入价格:'),
+                  deliveryDate: prompt('请输入预计送达日期:'),
+                  status: prompt('请输入新状态:'),
+                  password,
+                  isPaid: prompt('是否已支付 (是/否):')
+                })
+              });
+
+              if (!response.ok) {
+                if (response.status === 401) {
+                  alert('未经授权');
+                } else if (response.status === 404) {
+                  alert('订单未找到');
+                } else {
+                  alert('更新订单失败.');
+                }
+                return;
               }
-              return;
+
+              const data = await response.json();
+              alert(data.message);
+              fetchOrderHistory();
+            } catch (error) {
+              console.error('Error updating order:', error);
+              alert('更新订单失败.');
             }
-  
-            const data = await response.json();
-            alert(data.message);
-            fetchOrderHistory(); 
-  
-          } catch (error) {
-            console.error('Error updating order:', error);
-            alert('更新订单失败.');
           }
         }
       });
     </script>
-  
-  </body>
-  </html>
+
+  </div>
+
+</body>
+</html>
