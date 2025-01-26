@@ -1,17 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Order Submission</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+  <title>订单提交</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
       background-color: #f9f9f9;
     }
-    form, .order-list {
+    form {
       max-width: 500px;
       margin: 20px auto;
       padding: 20px;
@@ -25,7 +24,7 @@
       margin-bottom: 8px;
       font-weight: bold;
     }
-    input, button {
+    input {
       width: 100%;
       margin-bottom: 15px;
       padding: 10px;
@@ -35,10 +34,22 @@
     button {
       background-color: #007BFF;
       color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
       cursor: pointer;
     }
     button:hover {
       background-color: #0056b3;
+    }
+    .order-list {
+      max-width: 700px;
+      margin: 20px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
     .order-item {
       border-bottom: 1px solid #ddd;
@@ -54,80 +65,82 @@
   </style>
 </head>
 <body>
-  <h1 style="text-align:center;">Order Submission</h1>
+  <h1 style="text-align:center;">订单提交</h1>
   <form id="orderForm">
-    <label for="item">水果名称或其他item</label>
+    <label for="item">水果名称或其他物品</label>
     <input type="text" id="item" name="item" placeholder="输入水果名称" required>
     
-    <label for="username">你的名字（英文full name）</label>
+    <label for="username">你的名字（英文全名）</label>
     <input type="text" id="username" name="username" placeholder="输入你的名字" required>
     
-    <label for="waterName">水的名字 (Water Name)</label>
-    <input type="text" id="waterName" name="waterName" placeholder="输入水的名字" required>
-    
-    <button type="submit">Submit Order</button>
+    <button type="submit">提交订单</button>
   </form>
 
   <div class="order-list" id="orderList">
-    <h2>Submitted Orders</h2>
+    <h2>已提交订单</h2>
     <div id="orders"></div>
   </div>
 
   <script>
-    const API_URL = 'http://localhost:5000/orders';
-
     const orderForm = document.getElementById('orderForm');
     const orderList = document.getElementById('orders');
 
-    async function fetchOrders() {
-      const response = await axios.get(API_URL);
-      const orders = response.data;
+    // Retrieve orders from localStorage or initialize an empty array
+    let orders = JSON.parse(localStorage.getItem('orders')) || [];
 
-      orderList.innerHTML = '';
-      orders.forEach(order => {
+    // Render orders on page load
+    renderOrders();
+
+    orderForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const item = document.getElementById('item').value;
+      const username = document.getElementById('username').value;
+
+      // New order with default status as "已提交"
+      const order = { item, username, status: '已提交' };
+      orders.push(order);
+
+      // Save orders to localStorage
+      localStorage.setItem('orders', JSON.stringify(orders));
+
+      // Re-render orders and reset the form
+      renderOrders();
+      orderForm.reset();
+    });
+
+    function renderOrders() {
+      orderList.innerHTML = ''; // Clear current list
+      orders.forEach((order, index) => {
         const orderDiv = document.createElement('div');
         orderDiv.className = 'order-item';
         orderDiv.innerHTML = `
-          <span><strong>Item:</strong> ${order.item}</span>
-          <span><strong>Name:</strong> ${order.username}</span>
-          <span><strong>Water Name:</strong> ${order.waterName}</span>
-          <span><strong>Status:</strong> ${order.status}</span>
-          <span><strong>Price:</strong> ${order.price || 'Not Set'}</span>
-          <span><strong>Delivery Date:</strong> ${order.deliveryDate || 'Not Set'}</span>
-          <button onclick="updateOrder('${order._id}')">Update Order</button>
-          <button onclick="deleteOrder('${order._id}')">Delete Order</button>
+          <span><strong>物品:</strong> ${order.item}</span>
+          <span><strong>名字:</strong> ${order.username}</span>
+          <span><strong>状态:</strong> ${order.status}</span>
+          <button onclick="changeStatus(${index})">修改状态</button>
+          <button onclick="deleteOrder(${index})" style="background-color: red; margin-left: 10px;">删除订单</button>
         `;
         orderList.appendChild(orderDiv);
       });
     }
 
-    orderForm.addEventListener('submit', async function (e) {
-      e.preventDefault();
-      const item = document.getElementById('item').value;
-      const username = document.getElementById('username').value;
-      const waterName = document.getElementById('waterName').value;
-
-      await axios.post(API_URL, { item, username, waterName });
-      alert('Order submitted successfully!');
-      orderForm.reset();
-      fetchOrders();
-    });
-
-    async function updateOrder(id) {
-      const price = prompt('Enter price:');
-      const deliveryDate = prompt('Enter delivery date:');
-      const status = prompt('Enter status (Submitted, Viewed, Delivered):');
-      await axios.put(`${API_URL}/${id}`, { price, deliveryDate, status });
-      fetchOrders();
+    function changeStatus(index) {
+      const newStatus = prompt('请输入新的状态 (已查看 / 已送达):', orders[index].status);
+      if (newStatus) {
+        orders[index].status = newStatus;
+        localStorage.setItem('orders', JSON.stringify(orders));
+        renderOrders();
+      }
     }
 
-    async function deleteOrder(id) {
-      await axios.delete(`${API_URL}/${id}`);
-      alert('Order deleted successfully!');
-      fetchOrders();
+    function deleteOrder(index) {
+      if (confirm('确定要删除这个订单吗？')) {
+        orders.splice(index, 1); // Remove order from the array
+        localStorage.setItem('orders', JSON.stringify(orders)); // Update localStorage
+        renderOrders(); // Re-render orders
+      }
     }
-
-    fetchOrders();
   </script>
 </body>
 </html>
