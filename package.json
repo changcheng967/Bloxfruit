@@ -1,7 +1,21 @@
 {
-  "name": "order-app",
+  "name": "order-submission",
   "version": "1.0.0",
+  "description": "An order submission app with MongoDB and Vercel",
+  "main": "index.js",
+  "scripts": {
+    "start": "vercel dev",
+    "deploy": "vercel --prod"
+  },
   "dependencies": {
-    "mongoose": "^5.10.9"
-  }
+    "express": "^4.17.1",
+    "mongoose": "^5.10.9",
+    "dotenv": "^8.2.0"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": "14.x"
+  },
+  "author": "",
+  "license": "MIT"
 }
