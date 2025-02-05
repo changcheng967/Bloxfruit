@@ -24,8 +24,19 @@
 
     <div class="footer-box">
         <p>🚀 感谢您的支持！如有问题，请联系我们！</p>
+        <p>📅 <strong>发布时间：</strong> <span id="release-time"></span> (Toronto Time)</p>
     </div>
 </div>
+
+<script>
+    // 设置发布时间 (Toronto Time)
+    function updateReleaseTime() {
+        const options = { timeZone: 'America/Toronto', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+        const releaseTime = new Date().toLocaleString('zh-CN', options);
+        document.getElementById("release-time").textContent = releaseTime;
+    }
+    updateReleaseTime();
+</script>
 
 <style>
     .update-container {
