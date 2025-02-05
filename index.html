@@ -1,10 +1,13 @@
 <div class="update-container">
-    <h2>📢 Bloxfruit 商店 - 版本 1.5.1 Build 4 (v1.5.1-4) 更新公告</h2>
+    <h2>📢 Bloxfruit 商店 - 版本 1.5.1 Build 7 (v1.5.1-7) 更新公告</h2>
     <div class="update-box">
         <p><strong>🛠 修复内容：</strong></p>
         <ul>
-            <li>✅ 修复了 <strong>自定义实体果实</strong> 价格计算错误的问题，防止价格变为无限大或 `NaN`。</li>
-            <li>✅ 解决了 <strong>删除购物车中的实体果实时</strong>，价格可能显示 `NaN` 的问题，确保结算金额正确。</li>
+            <li>✅ 修复了 <strong>订单详细保存和文件命名</strong> 的问题，现在保存订单为 `.txt` 文件，并在文件名中显示购买的物品。</li>
+            <li>✅ 解决了 <strong>多个相同物品</strong> 订单时，文件名未正确显示数量的问题，现文件名格式为 `(数量)x 物品名称`。</li>
+            <li>✅ 改进了 <strong>订单文件组织结构</strong>，订单文件现在存储在 `orders` 文件夹中，且每个文件包含了购买的物品及订单号。</li>
+            <li>✅ 增加了 <strong>调试日志</strong>，以便更好地追踪文件保存路径和目录。</li>
+            <li>✅ 修复了 <strong>合同签署后未显示确认消息</strong> 的问题，现在合同签署完成后将显示一个确认提示。</li>
         </ul>
     </div>
 
@@ -77,3 +80,14 @@
         margin-bottom: 10px;
     }
 </style>
+
+<div class="files-changed-container">
+    <h3>📂 文件变动：</h3>
+    <ul>
+        <li>✅ **index.html**: 更新了更新公告部分，添加了版本号、更新内容以及合同签署后的确认提示。</li>
+        <li>✅ **contrast.html**: 添加了合同签署后的警告提示，并增加了成功签署后的确认消息。</li>
+        <li>❌ **terms.html**: 删除了该文件，不再使用。</li>
+        <li>✅ **server.js**: 修改了订单文件保存逻辑，改为保存 `.txt` 文件并按物品名和数量命名，同时改进了合同保存和提交逻辑。</li>
+        <li>✅ **.txt and .json file inside /Orders and /Contrast path**: 添加新文件用来测试稳定性与bug</li>
+    </ul>
+</div>
