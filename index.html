@@ -1,17 +1,78 @@
 <div class="update-container">
-    <h2>📢 Bloxfruit 商店 - 版本 1.5.1-4 更新公告</h2>
-    <p><strong>🛠 修复内容：</strong></p>
-    <ul>
-        <li>✅ 修复了 <strong>自定义实体果实</strong> 价格计算错误的问题，防止价格变为无限大或 `NaN`。</li>
-        <li>✅ 解决了 <strong>删除购物车中的实体果实时</strong>，价格可能显示 `NaN` 的问题，确保结算金额正确。</li>
-    </ul>
-    <p>⚠️ <strong>重要提示：</strong></p>
-    <ul>
-        <li>🔺 大部分红果价格已增加，旧订单可能被退回或需要补差价。</li>
-        <li>⌛ 提交订单后，请等待 5 秒，直到出现“订单已提交”提示再关闭页面。</li>
-        <li>🚫 任何滥用提交订单的行为都可能导致永久封锁访问权限。</li>
-    </ul>
-    <p>🔗 <a href="https://stats.uptimerobot.com/cpVGum5el9/798487410" target="_blank">查看服务器状态</a></p>
-    <p>📜 <a href="https://gambogebooby.onpella.app/contrast.html" target="_blank">查看完整的条款与条件</a></p>
-    <p>🚀 感谢您的支持！如有问题，请联系我们！</p>
+    <h2>📢 Bloxfruit 商店 - 版本 1.5.1 Build 4 (v1.5.1-4) 更新公告</h2>
+    <div class="update-box">
+        <p><strong>🛠 修复内容：</strong></p>
+        <ul>
+            <li>✅ 修复了 <strong>自定义实体果实</strong> 价格计算错误的问题，防止价格变为无限大或 `NaN`。</li>
+            <li>✅ 解决了 <strong>删除购物车中的实体果实时</strong>，价格可能显示 `NaN` 的问题，确保结算金额正确。</li>
+        </ul>
+    </div>
+
+    <div class="warning-box">
+        <p><strong>⚠️ 重要提示：</strong></p>
+        <ul>
+            <li>🔺 **大部分红果价格已增加，旧订单可能被退回或需要补差价。**</li>
+            <li>⌛ **提交订单后，请等待 5 秒，直到出现“订单已提交”提示再关闭页面。**</li>
+            <li>🚫 **任何滥用提交订单的行为都可能导致永久封锁访问权限。**</li>
+        </ul>
+    </div>
+
+    <div class="links-box">
+        <p>🔗 <a href="https://stats.uptimerobot.com/cpVGum5el9/798487410" target="_blank">查看服务器状态</a></p>
+        <p>📜 <a href="https://gambogebooby.onpella.app/contrast.html" target="_blank">查看完整的条款与条件</a></p>
+    </div>
+
+    <div class="footer-box">
+        <p>🚀 感谢您的支持！如有问题，请联系我们！</p>
+    </div>
 </div>
+
+<style>
+    .update-container {
+        background: #1e1e1e;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.1);
+        color: white;
+        text-align: center;
+        max-width: 800px;
+        margin: 20px auto;
+    }
+    .update-box, .warning-box, .links-box, .footer-box {
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 8px;
+    }
+    .update-box {
+        background: #222;
+        border-left: 5px solid #4caf50;
+    }
+    .warning-box {
+        background: #322;
+        border-left: 5px solid #ff5555;
+    }
+    .links-box {
+        background: #232;
+        border-left: 5px solid #ffcc00;
+    }
+    .footer-box {
+        background: #121212;
+    }
+    h2 {
+        color: #ffcc00;
+    }
+    a {
+        color: #ffcc00;
+        text-decoration: none;
+        font-weight: bold;
+    }
+    ul {
+        text-align: left;
+        list-style: none;
+        padding: 0;
+    }
+    li {
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+</style>
