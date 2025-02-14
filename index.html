@@ -1,45 +1,49 @@
 <div class="update-container">
-    <h2>📢 Bloxfruit 商店 - 版本 1.5.1 Build 7 (v1.5.1-7) 更新公告</h2>
+    <h2>📢 Bloxfruit 商店 - 版本 1.7.0 Build 3 (v1.7.0-3) 更新公告</h2>
 
     <div class="update-box">
         <p><strong>🛠 文件变动：</strong></p>
         <ul>
-            <li>✅ **index.html**: 更新了更新公告部分，添加了版本号、更新内容以及合同签署后的确认提示。</li>
-            <li>✅ **contrast.html**: 添加了合同签署后的警告提示，并增加了成功签署后的确认消息。</li>
-            <li>❌ **terms.html**: 删除了该文件，不再使用。</li>
-            <li>✅ **server.js**: 修改了订单文件保存逻辑，改为保存 `.txt` 文件并按物品名和数量命名，同时改进了合同保存和提交逻辑。</li>
-            <li>✅ **.txt and .json file inside /Orders and /Contrast path**: 添加新文件用来测试稳定性与bug。</li>
+            <li>✅ **index.html**: 更新了价格计算器，修复了物品价格调整后的自动计算问题。</li>
         </ul>
     </div>
 
     <div class="update-box">
         <p><strong>🛠 修复内容：</strong></p>
         <ul>
-            <li>✅ 修复了 <strong>订单详细保存和文件命名</strong> 的问题，现在保存订单为 `.txt` 文件，并在文件名中显示购买的物品。</li>
-            <li>✅ 解决了 <strong>多个相同物品</strong> 订单时，文件名未正确显示数量的问题，现文件名格式为 `(数量)x 物品名称`。</li>
-            <li>✅ 改进了 <strong>订单文件组织结构</strong>，订单文件现在存储在 `orders` 文件夹中，且每个文件包含了购买的物品及订单号。</li>
-            <li>✅ 增加了 <strong>调试日志</strong>，以便更好地追踪文件保存路径和目录。</li>
-            <li>✅ 修复了 <strong>合同签署后未显示确认消息</strong> 的问题，现在合同签署完成后将显示一个确认提示。</li>
+            <li>✅ 修复了 <strong>价格调整后</strong> 的自动计算问题，现在物品价格已修正，自动计算器与实际价格同步。</li>
+            <li>✅ 修复了 <strong>forEach 使用错误</strong>，修正了对嵌套数组的迭代，确保每个物品正确地被处理。</li>
+            <li>✅ 修复了 <strong>价格计算不一致的问题</strong>，确保物品价格计算一致，避免了在显示和按钮操作之间的差异。</li>
+            <li>✅ 修复了 <strong>缺少 DOMContentLoaded 监听器</strong>，防止脚本在 DOM 未完全加载时运行，避免了潜在的错误。</li>
+            <li>✅ 修复了 <strong>自定义（Physical Fruit）订单问题</strong>，删除该特定物品后，价格计算器不再工作的问题。</li>
+        </ul>
+    </div>
+
+    <div class="update-box">
+        <p><strong>新功能：</strong></p>
+        <ul>
+            <li>✅ 新增了 <strong>订单状态查看网站</strong>，现在可以访问 <a href="https://orchidcat.onpella.app/" target="_blank">https://orchidcat.onpella.app/</a> 查看订单状态。</li>
         </ul>
     </div>
 
     <div class="warning-box">
         <p><strong>⚠️ 重要提示：</strong></p>
         <ul>
-            <li>🔺 **大部分红果价格已增加，旧订单可能被退回或需要补差价。**</li>
+            <li>🔺 **价格已调整，确保更新订单价格，避免差价问题。**</li>
             <li>⌛ **提交订单后，请等待 5 秒，直到出现“订单已提交”提示再关闭页面。**</li>
             <li>🚫 **任何滥用提交订单的行为都可能导致永久封锁访问权限。**</li>
+            <li>⚠️ **在提交订单前，必须签署对比合同，否则订单可能会被退回。**</li>
         </ul>
     </div>
 
     <div class="links-box">
-        <p>🔗 <a href="https://stats.uptimerobot.com/cpVGum5el9/798487410" target="_blank">查看服务器状态</a></p>
+        <p>🔗 <a href="https://orchidcat.onpella.app/" target="_blank">查看订单状态</a></p>
         <p>📜 <a href="https://gambogebooby.onpella.app/contrast.html" target="_blank">查看完整的条款与条件</a></p>
     </div>
 
     <div class="footer-box">
         <p>🚀 感谢您的支持！如有问题，请联系我们！</p>
-        <p>📅 <strong>发布时间：</strong> 2025年2月5日 19:03 (Toronto Time)</p>
+        <p>📅 <strong>发布时间：</strong> 2025年2月13日 21:25 (Toronto Time)</p>
     </div>
 </div>
 
